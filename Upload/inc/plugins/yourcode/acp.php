@@ -41,7 +41,7 @@ function yourcode_admin()
 	}
 
 	// no need for all the classes and functions if it is just AJAX test
-	if ($mybb->input['mode'] != 'xmlhttp') {
+	if ($mybb->get_input('mode') != 'xmlhttp') {
 		// URL, link and image markup generator
 		$html = new HTMLGenerator010000(YOURCODE_URL, array('script', 'style', 'type', 'name'));
 
@@ -56,7 +56,7 @@ EOF;
 	}
 
 	// if there is an existing function for the action
-	$page_function = 'yourcode_admin_' . $mybb->input['action'];
+	$page_function = 'yourcode_admin_' . $mybb->get_input('action');
 	if (function_exists($page_function)) {
 		// run it
 		$page_function();
@@ -77,27 +77,27 @@ function yourcode_admin_view()
 	global $page, $mybb, $lang, $db, $html, $min;
 
 	if ($mybb->request_method == 'post') {
-		if ($mybb->input['mode'] == 'inline') {
+		if ($mybb->get_input('mode') == 'inline') {
 			// verify incoming POST request
-			if (!verify_post_check($mybb->input['my_post_key'])) {
+			if (!verify_post_check($mybb->get_input('my_post_key'))) {
 				flash_message($lang->invalid_post_verify_key2, 'error');
-				admin_redirect($html->url(array("page" => $mybb->input['page'])));
+				admin_redirect($html->url(array("page" => $mybb->get_input('page'))));
 			}
 
-			if (!is_array($mybb->input['yc_inline_ids']) ||
-				empty($mybb->input['yc_inline_ids'])) {
+			if (!is_array($mybb->get_input('yc_inline_ids')) ||
+				empty($mybb->get_input('yc_inline_ids'))) {
 				flash_message($lang->yourcode_inline_selection_error, 'error');
-				admin_redirect($html->url(array("page" => $mybb->input['page'])));
+				admin_redirect($html->url(array("page" => $mybb->get_input('page'))));
 			}
 
 			$job_count = 0;
-			foreach ($mybb->input['yc_inline_ids'] as $id => $throw_away) {
+			foreach ($mybb->get_input('yc_inline_ids') as $id => $throw_away) {
 				$this_code = new YourCode($id);
 				if (!$this_code->isValid()) {
 					continue;
 				}
 
-				switch ($mybb->input['inline_action']) {
+				switch ($mybb->get_input('inline_action')) {
 				case 'delete':
 					$action = $lang->yourcode_deleted;
 					if (!$this_code->remove()) {
@@ -105,7 +105,7 @@ function yourcode_admin_view()
 					}
 					break;
 				default:
-					$value = ($mybb->input['inline_action'] == 'activate');
+					$value = ($mybb->get_input('inline_action') == 'activate');
 					$action = $value ? $lang->yourcode_activated : $lang->yourcode_deactivated;
 
 					if (($this_code->get('active') &&
@@ -124,22 +124,22 @@ function yourcode_admin_view()
 			}
 			flash_message($lang->sprintf($lang->yourcode_inline_success, $job_count, $lang->yourcode, $action), 'success');
 			yourcode_build_cache();
-			admin_redirect($html->url(array("page" => $mybb->input['page'])));
+			admin_redirect($html->url(array("page" => $mybb->get_input('page'))));
 		}
 	}
 
-	if ($mybb->input['mode'] == 'delete') {
+	if ($mybb->get_input('mode') == 'delete') {
 		// verify incoming POST request
-		if (!verify_post_check($mybb->input['my_post_key'])) {
+		if (!verify_post_check($mybb->get_input('my_post_key'))) {
 			flash_message($lang->invalid_post_verify_key2, 'error');
 			admin_redirect($html->url());
 		}
 
 		// good info?
 		if (isset($mybb->input['id']) &&
-			(int) $mybb->input['id']) {
+			(int) $mybb->get_input('id')) {
 			// then attempt deletion
-			$this_code = new YourCode($mybb->input['id']);
+			$this_code = new YourCode($mybb->get_input('id'));
 			if ($this_code->isValid()) {
 				$success = $this_code->remove();
 			}
@@ -153,27 +153,27 @@ function yourcode_admin_view()
 			// boo, we suck
 			flash_message($lang->sprintf($lang->yourcode_message_fail, $lang->yourcode, $lang->yourcode_deleted), 'error');
 		}
-		admin_redirect($html->url(array("page" => $mybb->input['page'])));
-	} elseif (in_array($mybb->input['mode'], array('activate', 'deactivate'))) {
+		admin_redirect($html->url(array("page" => $mybb->get_input('page'))));
+	} elseif (in_array($mybb->get_input('mode'), array('activate', 'deactivate'))) {
 		// verify incoming POST request
-		if (!verify_post_check($mybb->input['my_post_key'])) {
+		if (!verify_post_check($mybb->get_input('my_post_key'))) {
 			flash_message($lang->invalid_post_verify_key2, 'error');
 			admin_redirect($html->url());
 		}
 
 		// good info?
 		if (isset($mybb->input['id']) &&
-			(int) $mybb->input['id']) {
-			$this_code = new YourCode($mybb->input['id']);
+			(int) $mybb->get_input('id')) {
+			$this_code = new YourCode($mybb->get_input('id'));
 			if ($this_code->isValid()) {
-				$value = ($mybb->input['mode'] == 'activate');
+				$value = ($mybb->get_input('mode') == 'activate');
 				$this_code->set('active', $value);
 				$success = $this_code->save();
 			}
 		}
 
 		$action = $lang->yourcode_activated;
-		if ($mybb->input['mode'] != 'activate') {
+		if ($mybb->get_input('mode') != 'activate') {
 			$action = $lang->yourcode_deactivated;
 		}
 
@@ -185,13 +185,13 @@ function yourcode_admin_view()
 			// boo, we suck
 			flash_message($lang->sprintf($lang->yourcode_message_fail, $lang->yourcode, $action), 'error');
 		}
-		admin_redirect($html->url(array("page" => $mybb->input['page'])));
-	} elseif ($mybb->input['mode'] == 'export') {
+		admin_redirect($html->url(array("page" => $mybb->get_input('page'))));
+	} elseif ($mybb->get_input('mode') == 'export') {
 		// good info?
 		if (isset($mybb->input['id']) &&
-			(int) $mybb->input['id']) {
+			(int) $mybb->get_input('id')) {
 			// then attempt deletion
-			$this_code = new YourCode($mybb->input['id']);
+			$this_code = new YourCode($mybb->get_input('id'));
 			if ($this_code->isValid()) {
 				$success = $this_code->export();
 				exit;
@@ -199,7 +199,7 @@ function yourcode_admin_view()
 		}
 		// boo, we suck
 		flash_message($lang->sprintf($lang->yourcode_message_fail, $lang->yourcode, $lang->yourcode_exported), 'error');
-		admin_redirect($html->url(array("page" => $mybb->input['page'])));
+		admin_redirect($html->url(array("page" => $mybb->get_input('page'))));
 	}
 
 	// start output
@@ -228,7 +228,7 @@ EOF;
 	$perPage = 10;
 	$totalPages = ceil($resultCount / $perPage);
 
-	$form = new Form($html->url(array("action" => 'view', "mode" => 'inline')), 'post', 'inline_form', '', '', '', $onSubmit);
+	$form = new Form($html->url(array("action" => 'view', "mode" => 'inline')), 'post', 'inline_form', '', '', '', isset($onSubmit) ? $onSubmit : '');
 
 	$table = new Table;
 	$table->construct_header($lang->yourcode_title, array("style" => 'width: 25%;'));
@@ -241,23 +241,23 @@ EOF;
 
 	// adjust the page number if the user has entered manually or is returning to a page that no longer exists (deleted last YourCode on page)
 	if (!isset($mybb->input['page']) ||
-		$mybb->input['page'] == '' ||
-		(int) $mybb->input['page'] < 1) {
+		$mybb->get_input('page') == '' ||
+		(int) $mybb->get_input('page') < 1) {
 		// no page, page = 1
 		$mybb->input['page'] = 1;
-	} else if ($mybb->input['page'] > $totalPages) {
+	} else if ($mybb->get_input('page') > $totalPages) {
 		// past last page? page = last page
 		$mybb->input['page'] = $totalPages;
 	} else {
 		// in range? page = # in link
-		$mybb->input['page'] = (int) $mybb->input['page'];
+		$mybb->input['page'] = (int) $mybb->get_input('page');
 	}
 
 	// more than one page?
-	$start = ($mybb->input['page'] - 1) * $perPage;
+	$start = ($mybb->get_input('page') - 1) * $perPage;
 	if ($resultCount > $perPage) {
 		// save the pagination for below and show it here as well
-		$pagination = draw_admin_pagination($mybb->input['page'], $perPage, $resultCount, $html->url(array("action" => 'view')));
+		$pagination = draw_admin_pagination($mybb->get_input('page'), $perPage, $resultCount, $html->url(array("action" => 'view')));
 		echo($pagination . '<br />');
 	}
 
@@ -276,11 +276,11 @@ EOF;
 			$isActive = $code->get('active');
 			if ($isActive) {
 				$activeText = $lang->yourcode_deactivate;
-				$activeUrl = $html->url(array("action" => 'view', "mode" => 'deactivate', "page" => $mybb->input['page'], "id" => $id, "my_post_key" => $mybb->post_code));
+				$activeUrl = $html->url(array("action" => 'view', "mode" => 'deactivate', "page" => $mybb->get_input('page'), "id" => $id, "my_post_key" => $mybb->post_code));
 				$activeLink = $html->link($activeUrl, $activeText, array("title" => $lang->sprintf($lang->yourcode_message_active_status, strtolower($lang->yourcode_active), strtolower($activeText)), "style" => 'color: green'));
 			} else {
 				$activeText = $lang->yourcode_activate;
-				$activeUrl = $html->url(array("action" => 'view', "mode" => 'activate', "page" => $mybb->input['page'], "id" => $id, "my_post_key" => $mybb->post_code));
+				$activeUrl = $html->url(array("action" => 'view', "mode" => 'activate', "page" => $mybb->get_input('page'), "id" => $id, "my_post_key" => $mybb->post_code));
 				$activeLink = $html->link($activeUrl, $activeText, array("title" => $lang->sprintf($lang->yourcode_message_active_status, strtolower($lang->yourcode_inactive), strtolower($activeText)), "style" => 'color: red'));
 			}
 
@@ -300,8 +300,8 @@ EOF;
 			$popup = new PopupMenu("control_{$id}", $lang->yourcode_options);
 			$popup->add_item($lang->yourcode_edit, $edit_url);
 			$popup->add_item($activeText, $activeUrl);
-			$popup->add_item($lang->yourcode_export, $html->url(array("action" => 'view', "mode" => 'export', "page" => $mybb->input['page'], "id" => $id)));
-			$popup->add_item($lang->yourcode_delete, $html->url(array("action" => 'view', "mode" => 'delete', "page" => $mybb->input['page'], "id" => $id, "my_post_key" => $mybb->post_code)), $onClick);
+			$popup->add_item($lang->yourcode_export, $html->url(array("action" => 'view', "mode" => 'export', "page" => $mybb->get_input('page'), "id" => $id)));
+			$popup->add_item($lang->yourcode_delete, $html->url(array("action" => 'view', "mode" => 'delete', "page" => $mybb->get_input('page'), "id" => $id, "my_post_key" => $mybb->post_code)), $onClick);
 			$table->construct_cell($popup->fetch());
 			$table->construct_cell($form->generate_check_box("yc_inline_ids[{$id}]", '', '', array("class" => 'yc_check')));
 			$table->construct_row();
@@ -323,7 +323,7 @@ EOF;
 </select>
 <input id="yc_inline_submit" type="submit" class="button" name="yc_inline_submit" value="{$lang->go} (0)"/>
 <input id="yc_inline_clear" type="button" class="button" name="yc_inline_clear" value="{$lang->clear}"/>
-<input type="hidden" name="page" value="{$mybb->input['page']}"/>
+<input type="hidden" name="page" value="{$mybb->get_input('page')}"/>
 </span>
 EOF;
 	echo($inline);
@@ -350,10 +350,15 @@ function yourcode_admin_edit()
 	global $page, $mybb, $lang, $db, $html, $min;
 
 	// verify incoming POST request
-	if (!verify_post_check($mybb->input['my_post_key'])) {
+	if (!verify_post_check($mybb->get_input('my_post_key'))) {
 		flash_message($lang->invalid_post_verify_key2, 'error');
 		admin_redirect($html->url());
 	}
+
+	$sandbox = [
+		'html' => '',
+		'actual' => '',
+	];
 
 	// adding/updating
 	if ($mybb->request_method == 'post') {
@@ -363,7 +368,7 @@ function yourcode_admin_edit()
 			$this_code = new YourCode($mybb->input);
 			$success = $this_code->save();
 
-			if ($mybb->input['id']) {
+			if ($mybb->get_input('id')) {
 				$action = $lang->yourcode_updated;
 			} else {
 				$action = $lang->yourcode_added;
@@ -376,14 +381,14 @@ function yourcode_admin_edit()
 
 				if (isset($mybb->input['add_code_submit_return'])) {
 					admin_redirect($html->url());
-				} else if (!$mybb->input['id']) {
+				} else if (!$mybb->get_input('id')) {
 					$mybb->input['id'] = $success;
 				}
 			} else {
 				// boo, we suck
 				flash_message($lang->sprintf($lang->yourcode_message_fail, $lang->yourcode, $action), 'error');
 			}
-		} elseif ($mybb->input['mode'] == 'xmlhttp') {
+		} elseif ($mybb->get_input('mode') == 'xmlhttp') {
 			// send no cache headers
 			header('Expires: Sat, 1 Jan 2000 01:00:00 GMT');
 			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -392,16 +397,16 @@ function yourcode_admin_edit()
 			header('Content-type: text/html');
 
 			// test the regex and echo it for AJAX
-			$sandbox = yourcode_test_regex($mybb->input['regex'], $mybb->input['replacement'], $mybb->input['test_value'], $mybb->input);
+			$sandbox = yourcode_test_regex($mybb->get_input('regex'), $mybb->input['replacement'], $mybb->get_input('test_value'), $mybb->input);
 			echo $sandbox['actual'];
 			exit;
 		}
 	}
 
 	// admin has no JS in ACP?
-	if (isset($mybb->input['test']) && $mybb->input['test']) {
+	if (isset($mybb->input['test']) && $mybb->get_input('test')) {
 		// test the regex and warn them that save hasn't occurred
-		$sandbox = yourcode_test_regex($mybb->input['regex'], $mybb->input['replacement'], $mybb->input['test_value'], $mybb->input);
+		$sandbox = yourcode_test_regex($mybb->get_input('regex'), $mybb->input['replacement'], $mybb->get_input('test_value'), $mybb->input);
 		flash_message($lang->yourcode_sandbox_test_no_save_warning, 'error');
 	}
 
@@ -418,7 +423,7 @@ EOF;
 
 	// default to adding
 	$button_text = $lang->yourcode_add;
-	$this_code = new YourCode($mybb->input['id']);
+	$this_code = new YourCode($mybb->get_input('id'));
 
 	if ($this_code->isValid()) {
 		// editing? store the info for the form
@@ -438,6 +443,15 @@ EOF;
 	} else {
 		// creating? set up some defaults
 		$data = array(
+			'title' => '',
+			'description' => '',
+			'regex' => '',
+			'replacement' => '',
+			'active' => 1,
+			'id' => '',
+			'default_id' => '',
+			'alt_replacement' => '',
+			'single_line' => 1,
 			"parse_order" => 10,
 			"nestable" => 0,
 			"case_sensitive" => 0,
@@ -502,7 +516,7 @@ EOF;
 	$form_container = new FormContainer("{$button_text} {$lang->yourcode}");
 
 	$form_container->output_row($lang->yourcode_sandbox_desc);
-	$form_container->output_row($lang->yourcode_test_value, $lang->yourcode_test_value_desc, $form->generate_text_area('test_value', $mybb->input['test_value'], array('id' => 'test_value')).'<br />'.$form->generate_submit_button($lang->yourcode_test, array('id' => 'test', 'name' => 'test')), 'test_value');
+	$form_container->output_row($lang->yourcode_test_value, $lang->yourcode_test_value_desc, $form->generate_text_area('test_value', $mybb->get_input('test_value'), array('id' => 'test_value')).'<br />'.$form->generate_submit_button($lang->yourcode_test, array('id' => 'test', 'name' => 'test')), 'test_value');
 	$form_container->output_row($lang->yourcode_result_html, $lang->yourcode_result_html_desc, $form->generate_text_area('result_html', $sandbox['html'], array('id' => 'result_html', 'disabled' => 1)), 'result_html');
 	$form_container->output_row($lang->yourcode_result_actual, $lang->yourcode_result_actual_desc, "<div id=\"result_actual\">{$sandbox['actual']}</div>");
 	$form_container->end();
@@ -551,6 +565,8 @@ function yourcode_admin_module()
 {
 	global $page, $mybb, $lang, $db, $cache, $html;
 
+	$onClick = '';
+
 	// load our cache right away
 	$yourcode = $cache->read('yourcode');
 	$activeModules = $yourcode['active']['modules'];
@@ -561,30 +577,30 @@ function yourcode_admin_module()
 	}
 
 	if ($mybb->request_method == 'post') {
-		if ($mybb->input['mode'] == 'inline') {
-			$redirect = $html->url(array("action" => 'module', "page" => $mybb->input['page']));
+		if ($mybb->get_input('mode') == 'inline') {
+			$redirect = $html->url(array("action" => 'module', "page" => $mybb->get_input('page')));
 
 			// verify incoming POST request
-			if (!verify_post_check($mybb->input['my_post_key'])) {
+			if (!verify_post_check($mybb->get_input('my_post_key'))) {
 				flash_message($lang->invalid_post_verify_key2, 'error');
 				admin_redirect($redirect);
 			}
 
-			if (!is_array($mybb->input['yc_inline_ids']) ||
-				empty($mybb->input['yc_inline_ids'])) {
+			if (!is_array($mybb->get_input('yc_inline_ids')) ||
+				empty($mybb->get_input('yc_inline_ids'))) {
 				flash_message($lang->yourcode_inline_selection_error, 'error');
 				admin_redirect($redirect);
 			}
 
 			$job_count = 0;
-			foreach ($mybb->input['yc_inline_ids'] as $name => $throw_away) {
+			foreach ($mybb->get_input('yc_inline_ids') as $name => $throw_away) {
 				$this_module = new YourCodeModule($name);
 				if (!$this_module->isValid()) {
 					continue;
 				}
 
 				$deleted = false;
-				switch ($mybb->input['inline_action']) {
+				switch ($mybb->get_input('inline_action')) {
 				case 'delete':
 					if (!$this_module->remove()) {
 						continue 2;
@@ -592,7 +608,7 @@ function yourcode_admin_module()
 					$action = $lang->yourcode_deleted;
 					$deleted = true;
 				default:
-					if ($mybb->input['inline_action'] == 'activate') {
+					if ($mybb->get_input('inline_action') == 'activate') {
 						$action = $lang->yourcode_activated;
 						if (in_array($name, $activeModules)) {
 							continue 2;
@@ -600,14 +616,14 @@ function yourcode_admin_module()
 
 						// activate
 						$activeModules[] = $yourcode['active']['modules'][] = $name;
-					} elseif (in_array($mybb->input['inline_action'], array('deactivate', 'delete'))) {
-						if ($mybb->input['inline_action'] == 'deactivate') {
+					} elseif (in_array($mybb->get_input('inline_action'), array('deactivate', 'delete'))) {
+						if ($mybb->get_input('inline_action') == 'deactivate') {
 							$action = $lang->yourcode_deactivated;
 						}
 
 						if (!in_array($name, $activeModules)) {
 							if ($deleted) {
-								continue 1;
+								break;
 							}
 							continue 2;
 						}
@@ -627,26 +643,26 @@ function yourcode_admin_module()
 		}
 	}
 
-	if ($mybb->input['mode'] == 'delete') {
+	if ($mybb->get_input('mode') == 'delete') {
 		// verify incoming POST request
-		if (!verify_post_check($mybb->input['my_post_key'])) {
+		if (!verify_post_check($mybb->get_input('my_post_key'))) {
 			flash_message($lang->invalid_post_verify_key2, 'error');
 			admin_redirect($html->url(array("action" => 'module')));
 		}
 
 		// then attempt deletion
-		$this_module = new YourCodeModule($mybb->input['id']);
+		$this_module = new YourCodeModule($mybb->get_input('id'));
 		if ($this_module->isValid()) {
 			$success = $this_module->remove();
 		}
 
 		if ($success) {
-			if (in_array($mybb->input['id'], $activeModules)) {
+			if (in_array($mybb->get_input('id'), $activeModules)) {
 				// deactivate
 				$yourcode['active']['modules'] = $activeModules = array_filter($activeModules, function($var)
 				{
 					global $mybb;
-					return $var != $mybb->input['id'];
+					return $var != $mybb->get_input('id');
 				});
 			}
 			// yay for us
@@ -657,28 +673,28 @@ function yourcode_admin_module()
 			flash_message($lang->sprintf($lang->yourcode_message_fail, $lang->yourcode_modules, $lang->yourcode_deleted), 'error');
 		}
 		admin_redirect($html->url(array("action" => 'module')));
-	} elseif (in_array($mybb->input['mode'], array('activate', 'deactivate'))) {
+	} elseif (in_array($mybb->get_input('mode'), array('activate', 'deactivate'))) {
 		// verify incoming POST request
-		if (!verify_post_check($mybb->input['my_post_key'])) {
+		if (!verify_post_check($mybb->get_input('my_post_key'))) {
 			flash_message($lang->invalid_post_verify_key2, 'error');
 			admin_redirect($html->url(array("action" => 'module')));
 		}
 
-		$this_module = new YourCodeModule($mybb->input['name']);
+		$this_module = new YourCodeModule($mybb->get_input('name'));
 
 		if ($this_module->isValid()) {
-			if ($mybb->input['mode'] == 'activate' &&
-				!in_array($mybb->input['name'], $activeModules)) {
+			if ($mybb->get_input('mode') == 'activate' &&
+				!in_array($mybb->get_input('name'), $activeModules)) {
 				// activate
-				$activeModules[] = $yourcode['active']['modules'][] = $mybb->input['name'];
+				$activeModules[] = $yourcode['active']['modules'][] = $mybb->get_input('name');
 				$has_changed = true;
-			} elseif ($mybb->input['mode'] == 'deactivate' &&
-					  in_array($mybb->input['name'], $activeModules)) {
+			} elseif ($mybb->get_input('mode') == 'deactivate' &&
+					  in_array($mybb->get_input('name'), $activeModules)) {
 				// deactivate
 				$yourcode['active']['modules'] = $activeModules = array_filter($activeModules, function($var)
 				{
 					global $mybb;
-					return $var != $mybb->input['name'];
+					return $var != $mybb->get_input('name');
 				});
 				$has_changed = true;
 			}
@@ -688,7 +704,7 @@ function yourcode_admin_module()
 		}
 
 		$action = $lang->yourcode_activated;
-		if ($mybb->input['mode'] == 'deactivate') {
+		if ($mybb->get_input('mode') == 'deactivate') {
 			$action = $lang->yourcode_deactivated;
 		}
 
@@ -721,7 +737,7 @@ function yourcode_admin_module()
 EOF;
 
 	$page->output_header("{$lang->yourcode} - {$lang->yourcode_admin_module}");
-	yourcode_output_tabs('yourcode_module', $tab_extra);
+	yourcode_output_tabs('yourcode_module', (isset($tab_extra) ? $tab_extra : ''));
 
 	// get all modules and a count
 	$allModules = yourcode_get_modules();
@@ -730,26 +746,26 @@ EOF;
 	$perPage = 10;
 	$totalPages = ceil($resultCount / $perPage);
 	if (!isset($mybb->input['page']) ||
-		$mybb->input['page'] == '') {
+		$mybb->get_input('page') == '') {
 		// unset: 1st page
 		$mybb->input['page'] = 1;
-	} else if ($mybb->input['page'] > $totalPages) {
+	} else if ($mybb->get_input('page') > $totalPages) {
 		// too high: last page
 		$mybb->input['page'] = $totalPages;
 	} else {
 		// just right: chosen page
-		$mybb->input['page'] = (int) $mybb->input['page'];
+		$mybb->input['page'] = (int) $mybb->get_input('page');
 	}
 
 	// more than one page?
-	$start = ($mybb->input['page'] - 1) * $perPage;
+	$start = ($mybb->get_input('page') - 1) * $perPage;
 	if ($resultCount > $perPage) {
 		// build pagination and show one copy here
-		$pagination = draw_admin_pagination($mybb->input['page'], $perPage, $resultCount, $html->url(array("action" => 'module')));
+		$pagination = draw_admin_pagination($mybb->get_input('page'), $perPage, $resultCount, $html->url(array("action" => 'module')));
 		echo($pagination);
 	}
 
-	$form = new Form($html->url(array("action" => 'module', "mode" => 'inline')), 'post', 'inline_form', '', '', '', $onSubmit);
+	$form = new Form($html->url(array("action" => 'module', "mode" => 'inline')), 'post', 'inline_form', '', '', '', (isset($onSubmit) ? $onSubmit : ''));
 
 	$table = new Table;
 	$table->construct_header($lang->yourcode_title, array("style" => 'width: 25%;'));
@@ -778,11 +794,11 @@ EOF;
 			$isActive = in_array($name, $activeModules);
 			if ($isActive) {
 				$activeText = $lang->yourcode_deactivate;
-				$activeUrl = $html->url(array("action" => 'module', "mode" => 'deactivate', "page" => $mybb->input['page'], "name" => $name, "my_post_key" => $mybb->post_code));
+				$activeUrl = $html->url(array("action" => 'module', "mode" => 'deactivate', "page" => $mybb->get_input('page'), "name" => $name, "my_post_key" => $mybb->post_code));
 				$activeLink = $html->link($activeUrl, $activeText, array("title" => $lang->sprintf($lang->yourcode_module_message_active_status, strtolower($lang->yourcode_active), strtolower($activeText)), "style" => 'color: green'));
 			} else {
 				$activeText = $lang->yourcode_activate;
-				$activeUrl = $html->url(array("action" => 'module', "mode" => 'activate', "page" => $mybb->input['page'], "name" => $name, "my_post_key" => $mybb->post_code));
+				$activeUrl = $html->url(array("action" => 'module', "mode" => 'activate', "page" => $mybb->get_input('page'), "name" => $name, "my_post_key" => $mybb->post_code));
 				$activeLink = $html->link($activeUrl, $activeText, array("title" => $lang->sprintf($lang->yourcode_module_message_active_status, strtolower($lang->yourcode_inactive), strtolower($activeText)), "style" => 'color: red'));
 			}
 
@@ -792,7 +808,7 @@ EOF;
 
 			$popup = new PopupMenu("control_{$id}", $lang->yourcode_options);
 			$popup->add_item($activeText, $activeUrl);
-			$popup->add_item($lang->yourcode_delete, $html->url(array("action" => 'module', "mode" => 'delete', "page" => $mybb->input['page'], "id" => $id, "my_post_key" => $mybb->post_code)), $onClick);
+			$popup->add_item($lang->yourcode_delete, $html->url(array("action" => 'module', "mode" => 'delete', "page" => $mybb->get_input('page'), "id" => $id, "my_post_key" => $mybb->post_code)), $onClick);
 			$table->construct_cell($popup->fetch());
 			$table->construct_cell($form->generate_check_box("yc_inline_ids[{$id}]", '', '', array("class" => 'yc_check')));
 			$table->construct_row();
@@ -813,7 +829,7 @@ EOF;
 </select>
 <input id="yc_inline_submit" type="submit" class="button" name="yc_inline_submit" value="{$lang->go} (0)"/>
 <input id="yc_inline_clear" type="button" class="button" name="yc_inline_clear" value="{$lang->clear}"/>
-<input type="hidden" name="page" value="{$mybb->input['page']}"/>
+<input type="hidden" name="page" value="{$mybb->get_input('page')}"/>
 </span>
 EOF;
 	echo($inline);
@@ -839,9 +855,9 @@ function yourcode_admin_tools()
 {
 	global $page, $mybb, $lang, $db, $cache, $html;
 
-	if ($mybb->input['mode'] == 'clear') {
+	if ($mybb->get_input('mode') == 'clear') {
 		// verify incoming POST request
-		if (!verify_post_check($mybb->input['my_post_key'])) {
+		if (!verify_post_check($mybb->get_input('my_post_key'))) {
 			flash_message($lang->invalid_post_verify_key2, 'error');
 			admin_redirect($html->url(array("action" => 'module')));
 		}
@@ -854,7 +870,7 @@ function yourcode_admin_tools()
 			// boo, we suck
 			flash_message($lang->yourcode_clear_fail, 'error');
 		}
-	} elseif ($mybb->input['mode'] == 'default') {
+	} elseif ($mybb->get_input('mode') == 'default') {
 		if (yourcode_clear_all()) {
 			$success = yourcode_port_old_mycode();
 		}
@@ -868,7 +884,7 @@ function yourcode_admin_tools()
 			// boo, we suck
 			flash_message($lang->yourcode_default_fail, 'error');
 		}
-	} elseif ($mybb->input['mode'] == 'backup') {
+	} elseif ($mybb->get_input('mode') == 'backup') {
 		yourcode_backup();
 		exit;
 	}
@@ -934,10 +950,10 @@ function yourcode_admin_import()
 			admin_redirect($html->url(array("action" => 'tools')));
 		}
 
-		if ($mybb->input['mode'] == 'finish') {
-			if (is_array($mybb->input['export_ids']) &&
-				!empty($mybb->input['export_ids'])) {
-				$contents = $mybb->input['contents'];
+		if ($mybb->get_input('mode') == 'finish') {
+			if (is_array($mybb->get_input('export_ids')) &&
+				!empty($mybb->get_input('export_ids'))) {
+				$contents = $mybb->get_input('contents');
 				if (!trim($contents)) {
 					$error = $lang->yourcode_import_file_empty;
 				}
@@ -1116,7 +1132,7 @@ $plugins->add_hook('admin_config_menu', 'yourcode_admin_menu');
 function yourcode_admin_menu(&$sub_menu)
 {
 	global $lang;
-	if (!$lang->yourcode) {
+	if (!isset($lang->yourcode)) {
 		$lang->load('yourcode');
 	}
 
@@ -1172,6 +1188,8 @@ function yourcode_admin_permissions(&$admin_permissions)
 function yourcode_output_tabs($current)
 {
 	global $page, $lang, $mybb, $html;
+
+	$sub_tabs = [];
 
 	// set up tabs
 	$sub_tabs['yourcode_main'] = array(

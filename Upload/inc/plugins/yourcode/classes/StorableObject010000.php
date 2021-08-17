@@ -121,8 +121,6 @@ abstract class StorableObject010000 extends MalleableObject010000 implements Sto
 			case 'resource':
 				$this->data[$property] = $db->escape_string(json_encode($value));
 				break;
-			default:
-				continue;
 			}
 		}
 		$this->data['dateline'] = TIME_NOW;

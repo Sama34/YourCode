@@ -67,7 +67,6 @@ $settings = array(
 		),
 		"settings" => array(
 			"yourcode_minimize_js" => array(
-				"sid" => 'NULL',
 				"name" => 'yourcode_minimize_js',
 				"title" => $lang->yourcode_minimize_js_title,
 				"description" => $lang->yourcode_minimize_js_description,

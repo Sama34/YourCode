@@ -140,6 +140,8 @@ class HTMLGenerator010000
 	{
 		$properties = $this->build_property_list($options, $this->allowed_link_properties);
 
+		$icon_link = '';
+
 		if (isset($options['icon'])) {
 			$icon_img = $this->img($options['icon'], $icon_options);
 			$icon_link = <<<EOF
@@ -189,6 +191,8 @@ EOF;
 			!is_array($allowed)) {
 			return false;
 		}
+
+		$property_list = '';
 
 		foreach ($allowed as $key) {
 			if (isset($options[$key]) &&
