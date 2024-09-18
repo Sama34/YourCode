@@ -4,6 +4,8 @@
  * StorableObject Class Structure
  */
 
+declare(strict_types=1);
+
 /**
  * standard object for db storage/retrieval
  */
@@ -130,6 +132,14 @@ abstract class StorableObject010000 extends MalleableObject010000 implements Sto
 			// return true/false
 			return $db->update_query($this->tableName, $this->data, "id='{$this->id}'");
 		} else {
+			foreach(['parse_order', 'nestable', 'active', 'case_sensitive', 'single_line', 'multi_line', 'eval', 'callback', 'default_id'] as $dbField)
+			{
+				if(isset($this->data[$dbField]))
+				{
+					$this->data[$dbField] = (int)$this->data[$dbField];
+				}
+			}
+
 			// return the ID on success/false on fail
 			return $this->id = $db->insert_query($this->tableName, $this->data);
 		}
@@ -152,5 +162,3 @@ abstract class StorableObject010000 extends MalleableObject010000 implements Sto
 		return $db->delete_query($this->tableName, "id='{$this->id}'");
 	}
 }
-
-?>

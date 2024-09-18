@@ -4,6 +4,8 @@
  * MalleableObjectInterface Structure
  */
 
+declare(strict_types=1);
+
 /**
  * provides standard data methods and validation for inheritance
 */
@@ -13,5 +15,3 @@ interface MalleableObjectInterface010000
 	public function set($properties, $value = '');
 	public function isValid();
 }
-
-?>

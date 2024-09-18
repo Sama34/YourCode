@@ -11,6 +11,8 @@
  * @since     1.1
  */
 
+declare(strict_types=1);
+
 /**
  * build the cache of YourCode info
  *
@@ -238,5 +240,3 @@ function yourcode_check_uploaded_file($name = 'file', $return_url = '')
 	}
 	return $content;
 }
-
-?>

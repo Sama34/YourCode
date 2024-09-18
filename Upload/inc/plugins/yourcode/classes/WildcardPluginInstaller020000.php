@@ -9,6 +9,8 @@
  *
  */
 
+declare(strict_types=1);
+
 class WildcardPluginInstaller020000 implements WildcardPluginInstallerInterface010000
 {
 	/**
@@ -937,5 +939,3 @@ EOF
 		return false;
 	}
 }
-
-?>

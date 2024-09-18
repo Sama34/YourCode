@@ -4,6 +4,8 @@
  * interface
  */
 
+declare(strict_types=1);
+
 /**
  * standard interface for external PHP modules
  *
@@ -16,5 +18,3 @@ interface ExternalModuleInterface010000
 	public function run($function_name, $args = '');
 	public function remove();
 }
-
-?>

@@ -4,6 +4,8 @@
  * PortableObject Class Structure
  */
 
+declare(strict_types=1);
+
 /**
  * provides functionality to import and export any StorableObject as an
  * XML file and to output a row to be included in a collection exported by
@@ -191,5 +193,3 @@ EOF;
 		return preg_replace($find, $replace, strtolower(trim($name)));
 	}
 }
-
-?>

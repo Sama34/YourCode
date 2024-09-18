@@ -11,6 +11,8 @@
  * @since     1.1
  */
 
+declare(strict_types=1);
+
 /**
  * the YourCode database object wrapper
  *
@@ -126,10 +128,10 @@ class YourCode extends PortableObject010000
 				$data['can_use'] = implode(',', $data['can_use']);
 			}
 
-			if (strpos($data['can_view'], 'all') !== false) {
+			if (!empty($data['can_view']) && strpos($data['can_view'], 'all') !== false) {
 				$data['can_view'] = '';
 			}
-			if (strpos($data['can_use'], 'all') !== false) {
+			if (!empty($data['can_use']) && strpos($data['can_use'], 'all') !== false) {
 				$data['can_use'] = '';
 			}
 		}
@@ -155,5 +157,3 @@ class YourCode extends PortableObject010000
 		return $tree;
 	}
 }
-
-?>

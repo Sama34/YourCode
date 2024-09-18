@@ -4,6 +4,8 @@
  * MalleableObject Class Structure
  */
 
+declare(strict_types=1);
+
 /**
  * provides standard data methods and validation for inheritance
  */
@@ -70,5 +72,3 @@ abstract class MalleableObject010000 implements MalleableObjectInterface010000
 		return $this->valid;
 	}
 }
-
-?>

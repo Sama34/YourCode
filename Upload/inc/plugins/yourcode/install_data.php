@@ -11,6 +11,8 @@
  * @since     1.1
  */
 
+declare(strict_types=1);
+
 $tables = array(
 	'pgsql' => array(	
 		'yourcode' => array(
@@ -55,6 +57,8 @@ $tables = array(
 		"dateline" => 'INT(10)',
 	),
 );
+
+global $lang;
 
 $settings = array(
 	"yourcode_settings" => array(
@@ -109,5 +113,3 @@ EOF
 		),
 	),
 );
-
-?>

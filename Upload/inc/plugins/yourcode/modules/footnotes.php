@@ -16,6 +16,8 @@
  * This is an example[note]a rather pointless example at that[/note] sentence.
  */
 
+declare(strict_types=1);
+
 /**
  * yc_footnotes_info()
  *
@@ -81,5 +83,3 @@ EOF;
 	}
 	return $message;
 }
-
-?>

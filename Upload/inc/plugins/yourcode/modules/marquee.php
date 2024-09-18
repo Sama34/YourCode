@@ -18,6 +18,8 @@
  * [/marquee]
  */
 
+declare(strict_types=1);
+
 /**
  * yc_marquee_info()
  *
@@ -80,5 +82,3 @@ EOF;
 	}
 	return $message;
 }
-
-?>

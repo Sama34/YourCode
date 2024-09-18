@@ -6,6 +6,8 @@
  * produces standard or encoded URLs, HTML anchors and images
  */
 
+declare(strict_types=1);
+
 class HTMLGenerator010000
 {
 	/**
@@ -205,5 +207,3 @@ EOF;
 		return $property_list;
 	}
 }
-
-?>

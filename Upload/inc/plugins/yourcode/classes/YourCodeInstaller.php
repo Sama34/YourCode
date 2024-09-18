@@ -4,6 +4,8 @@
  * plugin specific extension
  */
 
+declare(strict_types=1);
+
 class YourCodeInstaller extends WildcardPluginInstaller020000
 {
 	static public function getInstance()
@@ -27,5 +29,3 @@ class YourCodeInstaller extends WildcardPluginInstaller020000
 		parent::__construct(MYBB_ROOT . 'inc/plugins/yourcode/install_data.php');
 	}
 }
-
-?>

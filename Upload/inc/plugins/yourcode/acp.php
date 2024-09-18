@@ -11,6 +11,8 @@
  * @since     1.0
  */
 
+declare(strict_types=1);
+
 define('YOURCODE_URL', 'index.php?module=config-yourcode');
 require_once MYBB_ROOT . 'inc/plugins/yourcode/functions_acp.php';
 require_once MYBB_ROOT . 'inc/plugins/yourcode/install.php';
@@ -20,6 +22,8 @@ require_once MYBB_ROOT . 'inc/plugins/yourcode/install.php';
  *
  * @return void
  */
+global $plugins;
+
 $plugins->add_hook('admin_load', 'yourcode_admin');
 function yourcode_admin()
 {
@@ -720,6 +724,10 @@ function yourcode_admin_module()
 		admin_redirect($html->url(array("action" => 'module')));
 	}
 
+	if ($mybb->settings['yourcode_minimize_js']) {
+		$min = '.min';
+	}
+
 	// start page output
 	$page->add_breadcrumb_item($lang->yourcode);
 	$page->add_breadcrumb_item($lang->yourcode_admin_module);
@@ -1221,5 +1229,3 @@ function yourcode_output_tabs($current)
 	}
 	$page->output_nav_tabs($sub_tabs, $current);
 }
-
-?>

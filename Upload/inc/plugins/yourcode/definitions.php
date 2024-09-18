@@ -11,6 +11,8 @@
  * @since     1.0
  */
 
+declare(strict_types=1);
+
 // these are (formerly) internally cached MyCodes
 $all_mycode = array(
 	array(
@@ -299,5 +301,3 @@ $all_mycode = array(
 		"default_id" => 20,
 	),
 );
-
-?>

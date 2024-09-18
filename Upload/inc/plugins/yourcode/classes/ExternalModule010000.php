@@ -4,6 +4,8 @@
  * class definition
  */
 
+declare(strict_types=1);
+
 /**
  * a standard wrapper for external PHP routines built upon the
  * MalleableObject abstract class and abiding by ExternalModuleInterface
@@ -117,5 +119,3 @@ abstract class ExternalModule010000 extends MalleableObject010000 implements Ext
 		return !file_exists($filename);
 	}
 }
-
-?>

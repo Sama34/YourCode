@@ -11,6 +11,8 @@
  * @since     1.0
  */
 
+declare(strict_types=1);
+
 /**
  * provide relevant information about the plugin and link users to updates
  *
@@ -441,5 +443,3 @@ function yourcode_build_settings_link()
 
 	return "<a href=\"{$url}\" title=\"{$lang->yourcode_plugin_settings}\">{$lang->yourcode_plugin_settings}</a>";
 }
-
-?>

@@ -11,6 +11,8 @@
  * @since     1.0
  */
 
+declare(strict_types=1);
+
 /**
  * get all of the YourCode stored in the db and return them as an array of objects
  *
@@ -68,5 +70,3 @@ function yourcode_get_modules($actives = '')
 	}
 	return $modules;
 }
-
-?>

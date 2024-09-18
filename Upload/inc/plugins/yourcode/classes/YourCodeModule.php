@@ -11,6 +11,8 @@
  * @since     1.1
  */
 
+declare(strict_types=1);
+
 /**
  * YourCode module class
  *
@@ -38,5 +40,3 @@ class YourCodeModule extends ExternalModule010000 implements ExternalModuleInter
 		return $this->run('parse_message', $message);
 	}
 }
-
-?>

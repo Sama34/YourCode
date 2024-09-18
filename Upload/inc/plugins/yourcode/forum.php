@@ -11,6 +11,8 @@
  * @since     1.0
  */
 
+declare(strict_types=1);
+
 /**
  * implements the parser hook to check the mycode cache and
  * store our codes before MyBB has a chance to
@@ -18,6 +20,8 @@
  * @param  string the post message
  * @return string the altered message
  */
+global $plugins;
+
 $plugins->add_hook('parse_message_start', 'yourcode_run', 1);
 function yourcode_run($message)
 {
@@ -233,5 +237,3 @@ function yourcode_check_user_permissions($good_groups)
 	// !empty = true for allow and false for disallow
 	return !empty(array_intersect($users_groups, $good_groups));
 }
-
-?>
